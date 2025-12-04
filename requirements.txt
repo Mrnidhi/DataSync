@@ -1,0 +1,34 @@
+# Core LlamaIndex packages
+llama-index==0.10.40
+llama-index-llms-ollama==0.2.2
+llama-index-embeddings-huggingface==0.2.3
+llama-index-vector-stores-chroma==0.1.6
+
+
+# Vector store
+chromadb==0.4.24
+
+# Web scraping
+beautifulsoup4==4.12.3
+lxml==5.1.0
+html2text==2020.1.16  # Sometimes needed by WebBaseLoader
+
+# Langchain
+langchain-community==0.0.38
+
+# ML/AI dependencies
+transformers>=4.36.0
+sentence-transformers>=2.2.2
+torch>=2.0.0  # or tensorflow
+numpy>=1.24.0
+
+# Async support
+aiohttp>=3.8.0
+
+# UI
+streamlit==1.28.2
+
+# Utilities
+python-dotenv==1.0.1
+requests==2.31.0
+pandas>=2.0.0  # Often needed by llama-index

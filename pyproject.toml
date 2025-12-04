@@ -1,0 +1,97 @@
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "datasight-ai"
+version = "0.1.0"
+description = "Self-healing observability plugin for Apache Airflow — autonomous failure detection, LLM-powered root-cause analysis, and engineer-approved auto-remediation."
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Srinidhi Gowda"}
+]
+keywords = ["airflow", "observability", "monitoring", "ai", "self-healing", "mlops", "dataops"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Apache Airflow",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Monitoring",
+]
+
+dependencies = [
+    "apache-airflow>=2.7.0",
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "requests>=2.28",
+    "python-dotenv>=1.0",
+    "prometheus-client>=0.19",
+]
+
+[project.optional-dependencies]
+ollama = [
+    "llama-index-core>=0.10",
+    "llama-index-llms-ollama>=0.1",
+    "llama-index-embeddings-huggingface>=0.1",
+    "llama-index-vector-stores-chroma>=0.1",
+    "chromadb>=0.4",
+]
+openai = [
+    "openai>=1.0",
+]
+git = [
+    "gitpython>=3.1",
+]
+slack = [
+    "slack-sdk>=3.20",
+]
+ui = [
+    "streamlit>=1.30",
+    "fastapi>=0.100",
+    "uvicorn[standard]>=0.20",
+]
+all = [
+    "datasight-ai[ollama,openai,git,slack,ui]",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "ruff>=0.3",
+    "mypy>=1.8",
+    "httpx>=0.27",
+]
+
+[project.entry-points."airflow.listeners"]
+datasight = "datasight.listener.listener:DataSightListener"
+
+[project.entry-points."airflow.plugins"]
+datasight_plugin = "datasight.airflow_plugin.plugin:DataSightAirflowPlugin"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["datasight*"]
+exclude = ["tests*", "venv*", "dags*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+
+[tool.pytest.ini_options]
+markers = [
+    "unit: fast in-process unit tests",
+    "integration: tests that exercise external services",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+]
