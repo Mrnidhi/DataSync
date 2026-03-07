@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: datasync-ui
+  namespace: datasync
+  labels:
+    app.kubernetes.io/name: datasync
+    app.kubernetes.io/component: ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: datasync
+      app.kubernetes.io/component: ui
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: datasync
+        app.kubernetes.io/component: ui
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 50000
+      containers:
+        - name: ui
+          image: ghcr.io/mrnidhi/datasync:0.1.0
+          imagePullPolicy: IfNotPresent
+          command: ["streamlit", "run", "datasight/ui/dashboard.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
+          ports:
+            - name: http
+              containerPort: 8501
+          envFrom:
+            - configMapRef:
+                name: datasync-config
+            - secretRef:
+                name: datasync-secrets
+                optional: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 300m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: datasync-ui
+  namespace: datasync
+  labels:
+    app.kubernetes.io/name: datasync
+    app.kubernetes.io/component: ui
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8501
+      targetPort: http
+      name: http
+  selector:
+    app.kubernetes.io/name: datasync
+    app.kubernetes.io/component: ui

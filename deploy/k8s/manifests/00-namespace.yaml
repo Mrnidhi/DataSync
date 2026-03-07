@@ -1,0 +1,6 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: datasync
+  labels:
+    app.kubernetes.io/name: datasync

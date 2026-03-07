@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "datasync.fullname" . }}-config
+  labels:
+    {{- include "datasync.labels" . | nindent 4 }}
+data:
+  DATASIGHT_ENABLED: "{{ .Values.config.enabled }}"
+  DATASIGHT_LLM_PROVIDER: "{{ .Values.config.llmProvider }}"
+  DATASIGHT_LLM_MODEL: "{{ .Values.config.llmModel }}"
+  DATASIGHT_OLLAMA_BASE_URL: "{{ .Values.config.ollamaBaseUrl }}"
+  DATASIGHT_APPROVAL_REQUIRED: "{{ .Values.config.approvalRequired }}"
+  DATASIGHT_APPROVAL_CHANNELS: "{{ .Values.config.approvalChannels }}"
+  DATASIGHT_APPROVAL_TIMEOUT_MINUTES: "{{ .Values.config.approvalTimeoutMinutes }}"
+  DATASIGHT_GIT_ENABLED: "{{ .Values.config.gitEnabled }}"
+  DATASIGHT_GIT_BRANCH_PREFIX: "{{ .Values.config.gitBranchPrefix }}"
+  DATASIGHT_PATCH_MODE: "{{ .Values.config.patchMode }}"
+  DATASIGHT_SLACK_CHANNEL: "{{ .Values.config.slackChannel }}"
+{{- if .Values.airflowListener.enabled }}
+---
+# Drop-in env file for the Airflow scheduler/worker pods so the listener
+# is auto-registered via env. Mount this configmap into existing Airflow pods.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.airflowListener.configMapName }}
+  labels:
+    {{- include "datasync.labels" . | nindent 4 }}
+data:
+  AIRFLOW__LISTENERS__LISTENER_CLASS: "datasight.listener.listener.DataSightListener"
+{{- end }}

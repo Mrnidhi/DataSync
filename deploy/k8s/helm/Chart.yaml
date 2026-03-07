@@ -1,0 +1,21 @@
+apiVersion: v2
+name: datasync
+description: |
+  DataSync — Self-Healing Airflow Observability Platform.
+  Installs the DataSight listener sidecar, REST API, and Streamlit
+  approval dashboard alongside an existing Apache Airflow 2.7+ deployment.
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - airflow
+  - observability
+  - self-healing
+  - dataops
+  - mlops
+home: https://github.com/Mrnidhi/DataSync
+sources:
+  - https://github.com/Mrnidhi/DataSync
+maintainers:
+  - name: Srinidhi Gowda
+icon: https://raw.githubusercontent.com/Mrnidhi/DataSync/main/docs/logo.png

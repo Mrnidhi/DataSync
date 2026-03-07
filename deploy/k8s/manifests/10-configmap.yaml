@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datasync-config
+  namespace: datasync
+data:
+  DATASIGHT_ENABLED: "true"
+  DATASIGHT_LLM_PROVIDER: "ollama"
+  DATASIGHT_LLM_MODEL: "llama3.2:8b"
+  DATASIGHT_OLLAMA_BASE_URL: "http://ollama:11434"
+  DATASIGHT_APPROVAL_REQUIRED: "true"
+  DATASIGHT_APPROVAL_CHANNELS: "ui,slack"
+  DATASIGHT_APPROVAL_TIMEOUT_MINUTES: "60"
+  DATASIGHT_GIT_ENABLED: "false"
+  DATASIGHT_PATCH_MODE: "direct"
+  DATASIGHT_SLACK_CHANNEL: "#datasync"
+---
+# Mount this ConfigMap into the existing Airflow scheduler/worker pods
+# (e.g. via the official airflow Helm chart's `extraEnvFrom`) so the
+# DataSight listener auto-registers.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: datasync-listener-env
+  namespace: datasync
+data:
+  AIRFLOW__LISTENERS__LISTENER_CLASS: "datasight.listener.listener.DataSightListener"

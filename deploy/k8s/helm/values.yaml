@@ -1,0 +1,99 @@
+# DataSync Helm chart default values.
+# Override with: helm install datasync ./deploy/k8s/helm -f my-values.yaml
+
+image:
+  repository: ghcr.io/mrnidhi/datasync
+  tag: "0.1.0"
+  pullPolicy: IfNotPresent
+
+# DataSync REST API (FastAPI + Prometheus /metrics)
+api:
+  enabled: true
+  replicas: 2
+  port: 8000
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+
+# Streamlit approval dashboard
+ui:
+  enabled: true
+  replicas: 1
+  port: 8501
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "300m"
+      memory: "512Mi"
+
+# Airflow Listener registration via env vars on the Airflow pods.
+# This values block is consumed by templates/airflow-listener-config.yaml,
+# which produces a ConfigMap you mount into the Airflow scheduler/worker pods.
+airflowListener:
+  enabled: true
+  configMapName: datasync-listener-env
+
+# DataSight runtime configuration (DATASIGHT_* env vars)
+config:
+  enabled: true
+  llmProvider: "ollama"        # ollama | openai
+  llmModel: "llama3.2:8b"
+  ollamaBaseUrl: "http://ollama:11434"
+  approvalRequired: true
+  approvalChannels: "ui,slack" # comma-separated
+  approvalTimeoutMinutes: 60
+  gitEnabled: false
+  gitBranchPrefix: "datasight/fix"
+  patchMode: "direct"          # direct | git_pr
+  slackChannel: "#datasync"
+
+# Secrets — values injected via existing Kubernetes Secret references.
+# Avoid checking real credentials into git.
+secrets:
+  existingSecret: ""           # name of a pre-created secret with the keys below
+  # Keys looked up in the secret if existingSecret is set:
+  #   OPENAI_API_KEY, GIT_TOKEN, SLACK_WEBHOOK_URL
+
+prometheus:
+  serviceMonitor:
+    enabled: false             # set true if kube-prometheus-stack is installed
+    interval: 30s
+    namespace: ""
+    labels: {}
+
+ingress:
+  enabled: false
+  className: ""
+  hosts:
+    - host: datasync.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 50000
+  fsGroup: 50000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  capabilities:
+    drop:
+      - ALL
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
